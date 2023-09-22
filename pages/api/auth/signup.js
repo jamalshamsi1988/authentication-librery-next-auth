@@ -1,4 +1,3 @@
-import User from "../../../models/User";
 import { hashPassword } from "../../../utils/auth";
 import connectDB from "../../../utils/connectDB";
 import User from './../../../models/User';
@@ -28,8 +27,8 @@ async function handler(req,res){
 
     const hashedPassword = await hashPassword(password);
     const newUser = await User.create({email : email , password : hashedPassword});
-
-    res.status(201).json({status : "success" , message : "User Created"})
+            console.log(newUser);
+    res.status(201).json({status : "success" , message : "User Created"});
 
 }
 
