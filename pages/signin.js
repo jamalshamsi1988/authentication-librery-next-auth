@@ -1,9 +1,25 @@
-import React from 'react'
+import { useRouter } from 'next/router';
+import React, { useState } from 'react'
+import { signIn } from 'next-auth/react';
 
 const SignIn = () => {
+const [email , setEmail] = useState("");
+const [password , setPassword] = useState("");
+const router = useRouter();
+
+const loginHandler = async ()=>{
+ const res =await signIn("credentials" , {
+    email , password ,
+    redirect : false,
+  });
+  if(!res.error) router.replace("/dashbord");
+}
   return (
     <div>
-        Signin
+        <h3>Login Form</h3>
+        <input type='text' placeholder='Email' value={email} onChange={(e)=> setEmail(e.target.value)} />
+        <input type='password' placeholder='Password' value={password} onChange={(e)=> setPassword(e.target.value)} />
+        <button onClick={loginHandler}>Login</button>
     </div>
   )
 }
