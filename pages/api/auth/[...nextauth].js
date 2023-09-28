@@ -1,11 +1,14 @@
 import NextAuth from "next-auth/next";
 import CredentialProvider from "next-auth/providers/credentials";
+import connectDB from './../../../utils/connectDB';
+import User from './../../../models/User';
+import { verifyPassword } from "../../../utils/auth";
 
 const authOptions = {
     session : {strategy :"jwt"} ,
     providers : [
         CredentialProvider({
-            name : "credentials" ,
+            // name : "credentials" ,
             // Credential : {
             //     email : {
             //         label : "Email",
@@ -17,9 +20,24 @@ const authOptions = {
             //         type : "password"
             //     },
             // },
-            
             async authorize(credentials , req){
-                return { name : "jamal"}
+                const{email , password} = credentials;
+
+                try{
+                        await connectDB();
+                }catch(error){
+                       throw new Error("error to connecting DB")
+                }
+
+                if(!email || !password) throw new Error("Invalid Data");
+
+                const user = await User.findOne({email : email});
+                if(!user) throw new Error("user dosen't exist");
+
+                const isValid = await verifyPassword(password, user.password);
+                if(!isValid) throw new Error("Username or password incorrect")
+                
+                return { email }
             }
         })
     ]
